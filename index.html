@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<canvas id="tela"></canvas>
+<style>
+	* {margin: 0; padding: 0;}
+	body {background: black;}
+	canvas {display: block;}
+</style>
+<script>
+	var tela = document.getElementById("tela");
+	var ctx = tela.getContext("2d"); //seta para o contexto em 2d
+	var modo = 2;
+	var delay = 60;
+	//tornando o canvas full height
+	tela.height = window.innerHeight;
+	tela.width = window.innerWidth;
+
+	//caracteres que irão aparecer na tela
+	var caracteres = "victorperin";
+	//convertendo caracteres para um array
+	caracteres = caracteres.split("");
+
+	var tamanho_fonte = 12;
+	var colunas = tela.width/tamanho_fonte; //numero de colunas da chuva
+	//um array de quedas, 1 por coluna
+	var quedas = [];
+	//x below is the x coordinate
+	//1 = y co-ordinate of the drop(same for every drop initially)
+	for(var x = 0; x < colunas; x++)
+		quedas[x] = 1;
+
+	//função que desenhas os caracteres
+	function draw()
+	{
+		if(tela.height!=window.innerHeight||tela.width!=window.innerWidth){
+			tela.height = window.innerHeight;
+			tela.width = window.innerWidth;
+			colunas = tela.width/tamanho_fonte; //numero de colunas da chuva
+			for(var x = 0; x < colunas; x++) quedas[x] = 1;
+		}
+
+		//BG preto para o canvas
+		//BG translucido para mostrar o rastro
+		ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+		ctx.fillRect(0, 0, tela.width, tela.height);
+
+		ctx.fillStyle = "#393"; //cor do texto
+		ctx.font = tamanho_fonte + "px arial";
+		//looping quedas
+		for(var i = 0; i < quedas.length; i++)
+		{
+			//randomizando caracteres
+			if(modo==1) var text = caracteres[Math.floor((quedas[i]-1)%caracteres.length)];
+			else text = caracteres[Math.floor((Math.random()*caracteres.length)%caracteres.length)];
+			ctx.fillText(text, i*tamanho_fonte, quedas[i]*tamanho_fonte);
+
+			//enviando a queda de volta para cima, randomicamente depois que passou pela tela
+			if(quedas[i]*tamanho_fonte > tela.height && Math.random() > 0.975)
+				quedas[i] = 0;
+
+			//incrementar cordenada Y
+			quedas[i]++;
+		}
+	}
+	setInterval(draw, delay);
+</script>
+</html>
